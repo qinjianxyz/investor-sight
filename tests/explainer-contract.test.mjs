@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { investorSightData } from "../data/investor-sight.js";
+import { investorSightData } from "../dist/src/data.js";
 
 test("demo includes an evaluator-facing narrative", () => {
   assert.ok(investorSightData.productNarrative.whatWeBuilt.length >= 80);

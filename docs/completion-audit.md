@@ -8,7 +8,7 @@
 |---|---|
 | Create project under `/projects/oss` | `projects/oss/investor-sight/` |
 | Use assignment PDF | Assignment requirements were extracted into `docs/spec.md` |
-| Use all 10 companies | `data/investor-sight.js` contains HON, NCLH, K, LOW, ALGM, ZIP, GIS, ASH, PSX, LW; tested in `tests/data-contract.test.mjs` |
+| Use all 10 companies | `src/data.ts` contains HON, NCLH, K, LOW, ALGM, ZIP, GIS, ASH, PSX, LW; tested in `tests/data-contract.test.mjs` |
 | Answer most actionable now | UI decision panel and ranking; NCLH ranked #1 with score 92 |
 | Answer what changed recently | `events` and `whyNow.recentDevelopments` for every company |
 | Answer why it matters | `whyNow.whyItMattersNow` for every company |
@@ -21,21 +21,23 @@
 | Reputable public news | Reuters/AP/Investing.com and Business Wire links in source register |
 | Proxy statements where relevant | NCLH proxy mirror and PSX proxy/company letter included |
 | Structured event extraction | Every event has `type`, `date`, `description`, `sourceId`, `importance`, `confidence`; tested |
-| Ranking with judgment | `src/scoring.mjs`, `investorSightData.scoringLogic`, ranking cards in UI |
-| Show scoring logic and drivers | README, UI ranking cards, `score.components`, `score.drivers`, `score.penalties` |
+| Ranking with judgment | `src/scoring.ts`, `investorSightData.scoringLogic`, ranking cards in UI |
+| Show scoring logic and drivers | README, UI ranking cards, score waterfalls, `score.components`, `score.drivers`, `score.penalties` |
 | Deep dives for each company | UI detail cards and `whyNow` objects for each company |
 | Final decision memo per company | `memo` object for each company, rendered in UI |
 | Workflow separation | `investorSightData.workflow`, README workflow section, UI workflow section |
-| Prototype deliverable | `index.html`, `styles.css`, `src/app.mjs` |
+| Prototype deliverable | `index.html`, `styles.css`, `src/app.ts`, compiled `dist/` output |
 | Code deliverable | Full project code under `projects/oss/investor-sight` |
 | README setup instructions | `README.md` |
 | Evaluator review path | `EVALUATOR.md` |
 | Quick notes / tradeoffs | `research/quick-notes.md` |
-| Explain what was built and why valuable | README, `productNarrative` in `data/investor-sight.js`, and UI brief section |
+| Explain what was built and why valuable | README, `productNarrative` in `src/data.ts`, and UI brief section |
 | Explain how it was built | README, `docs/implementation-plan.md`, `research/quick-notes.md`, and UI brief section |
 | Explain how to improve demo | README improvement section and `docs/system-design.md` roadmap |
 | Go deeper in system design | `docs/system-design.md` and UI system-design section |
 | Public repo safety | `docs/publication.md`; exported as standalone project rather than parent repo |
+| TypeScript implementation | `tsconfig.json`, `src/*.ts`, `npm run typecheck`, and `tests/tech-stack.test.mjs` |
+| OSS-style repo polish | `LICENSE`, `CONTRIBUTING.md`, `CHANGELOG.md`, `package-lock.json`, and `.github/workflows/ci.yml` |
 | Spec-driven development | `docs/spec.md` and `docs/implementation-plan.md` |
 | Test-driven development | Red test failed on missing data/scoring modules; final tests pass |
 | Full agent harness | Five read-only subagents researched/reviewed company groups and scoring/audit rubric |
@@ -44,12 +46,14 @@
 
 ```bash
 npm test -- --test-reporter=dot
+npm run typecheck
 npm run verify:data
 npm run build
 ```
 
 Expected current proof:
 
-- 9 tests pass, 0 fail.
+- 12 tests pass, 0 fail.
+- TypeScript typecheck passes.
 - Data verifier reports 10 companies, 54 sources, top=NCLH:92.
-- Static build reports required files present and modules import cleanly.
+- TypeScript build reports 5 dist files present and modules import cleanly.

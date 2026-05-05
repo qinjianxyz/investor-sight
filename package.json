@@ -1,24 +1,30 @@
 {
   "name": "investor-sight",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
   "files": [
     "README.md",
     "EVALUATOR.md",
+    "CHANGELOG.md",
+    "CONTRIBUTING.md",
     "index.html",
     "styles.css",
-    "data",
     "docs",
     "research",
     "scripts",
     "src",
-    "tests"
+    "tests",
+    "tsconfig.json"
   ],
   "scripts": {
-    "dev": "python3 -m http.server 4317",
-    "test": "node --test tests/*.test.mjs",
-    "verify:data": "node scripts/verify-data.mjs",
+    "dev": "npm run build && python3 -m http.server 4317 -d dist",
+    "test": "npm run build && node --test tests/*.test.mjs",
+    "typecheck": "tsc --noEmit",
+    "verify:data": "npm run build && node scripts/verify-data.mjs",
     "build": "node scripts/build.mjs"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
   }
 }

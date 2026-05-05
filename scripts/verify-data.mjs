@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 
-import { investorSightData } from "../data/investor-sight.js";
-import { rankCompanies } from "../src/scoring.mjs";
+import { investorSightData } from "../dist/src/data.js";
+import { rankCompanies } from "../dist/src/scoring.js";
 
 const requiredTickers = ["HON", "NCLH", "K", "LOW", "ALGM", "ZIP", "GIS", "ASH", "PSX", "LW"];
 const ranked = rankCompanies(investorSightData.companies);

@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { investorSightData } from "../data/investor-sight.js";
-import { rankCompanies } from "../src/scoring.mjs";
+import { investorSightData } from "../dist/src/data.js";
+import { rankCompanies } from "../dist/src/scoring.js";
 
 const requiredCompanies = new Set([
   "HON",

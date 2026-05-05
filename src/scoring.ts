@@ -1,11 +1,13 @@
-const IMPORTANCE_WEIGHT = {
+import type { ActionabilityTier, Company, CompanyScore, Importance, RankedCompany } from "./types.js";
+
+const IMPORTANCE_WEIGHT: Record<Importance, number> = {
   low: 1,
   medium: 2,
   high: 3,
   "very high": 4,
 };
 
-export function scoreCompany(company) {
+export function scoreCompany(company: Company): CompanyScore {
   const input = company.scoreInputs;
   const gross =
     input.activistPressure +
@@ -32,7 +34,7 @@ export function scoreCompany(company) {
   };
 }
 
-export function rankCompanies(companies) {
+export function rankCompanies(companies: Company[]): RankedCompany[] {
   return companies
     .map((company) => {
       const score = scoreCompany(company);
@@ -51,7 +53,7 @@ export function rankCompanies(companies) {
     });
 }
 
-export function tierForScore(score) {
+export function tierForScore(score: number): ActionabilityTier {
   if (score >= 85) return "Immediate";
   if (score >= 70) return "High";
   if (score >= 50) return "Watchlist";
@@ -59,15 +61,15 @@ export function tierForScore(score) {
   return "Why Not Now";
 }
 
-function clampScore(score) {
+function clampScore(score: number): number {
   return Math.max(0, Math.min(100, Math.round(score)));
 }
 
-function eventIntensity(company) {
-  return company.events.reduce((total, event) => total + (IMPORTANCE_WEIGHT[event.importance] ?? 0), 0);
+function eventIntensity(company: Company): number {
+  return company.events.reduce((total, event) => total + IMPORTANCE_WEIGHT[event.importance], 0);
 }
 
-function buildDrivers(company) {
+function buildDrivers(company: Company): string[] {
   const drivers = [...company.primaryDrivers];
 
   if (company.scoreInputs.activistPressure >= 24) {
@@ -81,7 +83,7 @@ function buildDrivers(company) {
   return [...new Set(drivers)];
 }
 
-function buildPenalties(company) {
+function buildPenalties(company: Company): string[] {
   const penalties = [...company.primaryPenalties];
 
   if (company.whyNow.uncertainties.some((item) => item.toLowerCase().includes("cyclical"))) {

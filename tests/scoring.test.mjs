@@ -1,8 +1,8 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { investorSightData } from "../data/investor-sight.js";
-import { rankCompanies, scoreCompany } from "../src/scoring.mjs";
+import { investorSightData } from "../dist/src/data.js";
+import { rankCompanies, scoreCompany } from "../dist/src/scoring.js";
 
 test("scoreCompany rewards active pressure, recent change, evidence quality, and thesis clarity", () => {
   const norwegian = investorSightData.companies.find((company) => company.ticker === "NCLH");

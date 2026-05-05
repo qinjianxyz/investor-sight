@@ -7,15 +7,20 @@ The public repository should contain only this standalone InvestorSight project.
 ## Include
 
 - `README.md`
+- `EVALUATOR.md`
+- `LICENSE`
+- `CONTRIBUTING.md`
+- `CHANGELOG.md`
 - `index.html`
 - `styles.css`
 - `package.json`
-- `data/`
+- `package-lock.json`
 - `src/`
 - `scripts/`
 - `tests/`
 - `docs/`
 - `research/`
+- `.github/workflows/ci.yml`
 
 ## Exclude
 
@@ -33,14 +38,16 @@ The public repository should contain only this standalone InvestorSight project.
 Run from the standalone export:
 
 ```bash
+npm ci
+npm run typecheck
 npm test -- --test-reporter=dot
 npm run verify:data
 npm run build
-python3 -m http.server 4317 --bind 127.0.0.1
+npm run dev
 ```
 
 Then verify the browser renders the top score, rankings, sources, and memos.
 
 ## Licensing
 
-No license is included yet. The repository is public for review, but reuse rights should be selected deliberately before presenting it as open-source software.
+The standalone review repo uses the MIT license. Do not publish parent-repo files or private assignment materials with that license.

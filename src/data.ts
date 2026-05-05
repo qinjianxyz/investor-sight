@@ -1,4 +1,6 @@
-export const investorSightData = {
+import type { InvestorSightData } from "./types.js";
+
+export const investorSightData: InvestorSightData = {
   asOf: "2026-05-05",
   generatedBy: "InvestorSight Why Now prototype",
   productNarrative: {
@@ -18,7 +20,7 @@ export const investorSightData = {
   systemDesign: [
     {
       name: "ingestion",
-      now: "Curated static sources are stored in a reviewed JavaScript data module and source register for maximum auditability.",
+      now: "Curated static sources are stored in a reviewed TypeScript data module and source register for maximum auditability.",
       next: "Build scheduled connectors for SEC EDGAR, company IR RSS, press-release wires, proxy filings, and reputable news APIs with source snapshots.",
       risk: "Automated ingestion can flood the system with low-signal events unless source scope and freshness windows are deliberately constrained.",
     },

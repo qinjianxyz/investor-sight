@@ -1,7 +1,14 @@
-import { investorSightData } from "../data/investor-sight.js";
-import { rankCompanies } from "./scoring.mjs";
+import { investorSightData } from "./data.js";
+import { rankCompanies } from "./scoring.js";
+import type { RankedCompany, ScoreComponents } from "./types.js";
 
-const state = {
+type FilterState = {
+  company: string;
+  tier: string;
+  eventType: string;
+};
+
+const state: FilterState = {
   company: "all",
   tier: "all",
   eventType: "all",
@@ -10,29 +17,32 @@ const state = {
 const ranking = rankCompanies(investorSightData.companies);
 
 const els = {
-  asOf: document.querySelector("#as-of"),
-  companyCount: document.querySelector("#company-count"),
-  sourceCount: document.querySelector("#source-count"),
-  eventCount: document.querySelector("#event-count"),
-  companyFilter: document.querySelector("#company-filter"),
-  tierFilter: document.querySelector("#tier-filter"),
-  eventFilter: document.querySelector("#event-filter"),
-  topCompany: document.querySelector("#top-company"),
-  topRationale: document.querySelector("#top-rationale"),
-  topScore: document.querySelector("#top-score"),
-  productNarrative: document.querySelector("#product-narrative"),
-  rankingGrid: document.querySelector("#ranking-grid"),
-  workflow: document.querySelector("#workflow"),
-  systemDesign: document.querySelector("#system-design"),
-  companyDetails: document.querySelector("#company-details"),
+  asOf: queryElement<HTMLElement>("#as-of"),
+  companyCount: queryElement<HTMLElement>("#company-count"),
+  sourceCount: queryElement<HTMLElement>("#source-count"),
+  eventCount: queryElement<HTMLElement>("#event-count"),
+  companyFilter: queryElement<HTMLSelectElement>("#company-filter"),
+  tierFilter: queryElement<HTMLSelectElement>("#tier-filter"),
+  eventFilter: queryElement<HTMLSelectElement>("#event-filter"),
+  topCompany: queryElement<HTMLElement>("#top-company"),
+  topRationale: queryElement<HTMLElement>("#top-rationale"),
+  topScore: queryElement<HTMLElement>("#top-score"),
+  productNarrative: queryElement<HTMLElement>("#product-narrative"),
+  rankingGrid: queryElement<HTMLElement>("#ranking-grid"),
+  workflow: queryElement<HTMLElement>("#workflow"),
+  systemDesign: queryElement<HTMLElement>("#system-design"),
+  companyDetails: queryElement<HTMLElement>("#company-details"),
 };
 
 init();
 
-function init() {
+function init(): void {
   const sourceCount = investorSightData.companies.reduce((sum, company) => sum + company.sources.length, 0);
   const eventCount = investorSightData.companies.reduce((sum, company) => sum + company.events.length, 0);
   const [top] = ranking;
+  if (!top) {
+    throw new Error("InvestorSight requires at least one company to render.");
+  }
 
   els.asOf.textContent = investorSightData.asOf;
   els.companyCount.textContent = String(investorSightData.companies.length);
@@ -49,20 +59,20 @@ function init() {
   render();
 
   els.companyFilter.addEventListener("change", (event) => {
-    state.company = event.target.value;
+    state.company = (event.currentTarget as HTMLSelectElement).value;
     render();
   });
   els.tierFilter.addEventListener("change", (event) => {
-    state.tier = event.target.value;
+    state.tier = (event.currentTarget as HTMLSelectElement).value;
     render();
   });
   els.eventFilter.addEventListener("change", (event) => {
-    state.eventType = event.target.value;
+    state.eventType = (event.currentTarget as HTMLSelectElement).value;
     render();
   });
 }
 
-function populateFilters() {
+function populateFilters(): void {
   for (const company of ranking) {
     els.companyFilter.append(option(company.ticker, `${company.name} (${company.ticker})`));
   }
@@ -71,7 +81,7 @@ function populateFilters() {
     els.tierFilter.append(option(tier, tier));
   }
 
-  const eventTypes = new Set();
+  const eventTypes = new Set<string>();
   for (const company of ranking) {
     for (const event of company.events) {
       eventTypes.add(event.type);
@@ -83,7 +93,7 @@ function populateFilters() {
   }
 }
 
-function render() {
+function render(): void {
   const filtered = ranking.filter((company) => {
     const companyMatch = state.company === "all" || company.ticker === state.company;
     const tierMatch = state.tier === "all" || company.actionabilityTier === state.tier;
@@ -95,7 +105,7 @@ function render() {
   els.companyDetails.replaceChildren(...filtered.map(renderCompanyDetail));
 }
 
-function renderProductNarrative() {
+function renderProductNarrative(): void {
   const narrative = investorSightData.productNarrative;
   const cards = [
     ["What we built", narrative.whatWeBuilt],
@@ -120,7 +130,7 @@ function renderProductNarrative() {
   els.productNarrative.replaceChildren(...cards, extra);
 }
 
-function renderWorkflow() {
+function renderWorkflow(): void {
   els.workflow.replaceChildren(
     ...investorSightData.workflow.map((item, index) => {
       const card = document.createElement("article");
@@ -135,7 +145,7 @@ function renderWorkflow() {
   );
 }
 
-function renderSystemDesign() {
+function renderSystemDesign(): void {
   els.systemDesign.replaceChildren(
     ...investorSightData.systemDesign.map((stage, index) => {
       const card = document.createElement("article");
@@ -157,7 +167,7 @@ function renderSystemDesign() {
   );
 }
 
-function renderRankingCard(company, index) {
+function renderRankingCard(company: RankedCompany, index: number): HTMLElement {
   const card = document.createElement("article");
   card.className = "ranking-card";
   card.innerHTML = `
@@ -175,6 +185,7 @@ function renderRankingCard(company, index) {
     <div class="score-meter" aria-label="Score ${company.score.total} out of 100">
       <span style="width: ${company.score.total}%"></span>
     </div>
+    ${renderScoreComponents(company.score.components, "compact")}
     <span class="tier-pill">${escapeHtml(company.whyNow.label)}</span>
     <ul class="mini-list">
       ${company.score.drivers.slice(0, 3).map((item) => `<li>${escapeHtml(item)}</li>`).join("")}
@@ -183,12 +194,15 @@ function renderRankingCard(company, index) {
   return card;
 }
 
-function renderCompanyDetail(company) {
+function renderCompanyDetail(company: RankedCompany): HTMLElement {
   const card = document.createElement("article");
   card.className = "detail-card";
   const eventList = company.events
     .map((event) => {
       const source = company.sources.find((item) => item.id === event.sourceId);
+      if (!source) {
+        throw new Error(`Missing source ${event.sourceId} for ${company.ticker}`);
+      }
       return `
         <li class="event-item">
           <div class="event-meta">
@@ -213,6 +227,10 @@ function renderCompanyDetail(company) {
       <span class="tier-pill">${company.actionabilityTier} · ${company.score.total}/100 · ${escapeHtml(company.whyNow.confidence)}</span>
     </div>
     <div class="detail-grid">
+      <section class="detail-section">
+        <h4>Score waterfall</h4>
+        ${renderScoreComponents(company.score.components, "detail")}
+      </section>
       <section class="detail-section">
         <h4>Recent developments</h4>
         <ul class="memo-list">${company.whyNow.recentDevelopments.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>
@@ -277,22 +295,59 @@ function renderCompanyDetail(company) {
   return card;
 }
 
-function option(value, label) {
+function renderScoreComponents(components: ScoreComponents, density: "compact" | "detail"): string {
+  const entries: Array<[string, number]> = [
+    ["Activist pressure", components.activistPressure],
+    ["Recent change", components.recentChange],
+    ["Business severity", components.businessSeverity],
+    ["Thesis clarity", components.thesisClarity],
+    ["Evidence quality", components.evidenceQuality],
+    ["Uncertainty", components.uncertaintyPenalty],
+  ];
+
+  return `
+    <div class="component-grid component-grid-${density}" aria-label="Score factor waterfall">
+      ${entries
+        .map(([label, value]) => {
+          const isPenalty = value < 0;
+          const width = Math.max(8, Math.min(100, Math.abs(value) * 3.3));
+          return `
+            <div class="component-row ${isPenalty ? "component-row-penalty" : ""}">
+              <span>${escapeHtml(label)}</span>
+              <div class="component-bar" aria-hidden="true"><i style="width: ${width}%"></i></div>
+              <strong>${value > 0 ? "+" : ""}${value}</strong>
+            </div>
+          `;
+        })
+        .join("")}
+    </div>
+  `;
+}
+
+function option(value: string, label: string): HTMLOptionElement {
   const element = document.createElement("option");
   element.value = value;
   element.textContent = label;
   return element;
 }
 
-function titleCase(value) {
+function titleCase(value: string): string {
   return value.replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function escapeHtml(value) {
+function escapeHtml(value: unknown): string {
   return String(value)
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+function queryElement<T extends HTMLElement>(selector: string): T {
+  const element = document.querySelector<T>(selector);
+  if (!element) {
+    throw new Error(`Missing required element: ${selector}`);
+  }
+  return element;
 }

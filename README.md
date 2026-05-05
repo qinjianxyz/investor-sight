@@ -7,13 +7,15 @@ Static prototype for the take-home assignment: rank 10 companies by current acti
 ## 90-Second Review
 
 ```bash
+npm ci
+npm run typecheck
 npm test -- --test-reporter=dot
 npm run verify:data
 npm run build
-python3 -m http.server 4317 --bind 127.0.0.1
+npm run dev
 ```
 
-Open `http://127.0.0.1:4317/`, inspect NCLH as the top case, inspect Kellanova as the "Why Not Now" edge case, then audit sources in `research/source-register.md`.
+Open `http://127.0.0.1:4317/`, inspect NCLH as the top case, inspect the score waterfall behind the ranking, inspect Kellanova as the "Why Not Now" edge case, then audit sources in `research/source-register.md`.
 
 See [EVALUATOR.md](EVALUATOR.md) for the full reviewer path.
 
@@ -27,16 +29,20 @@ The prototype is valuable because it does not stop at collection. It separates s
 
 ```bash
 cd investor-sight
+npm ci
+npm run typecheck
 npm test
 npm run verify:data
 npm run build
 npm run dev
 ```
 
-Open `http://localhost:4317/`, or run the static server directly:
+Open `http://localhost:4317/`. `npm run dev` builds TypeScript into `dist/` and serves the compiled static app.
+
+To serve an already-built artifact directly:
 
 ```bash
-python3 -m http.server 4317
+python3 -m http.server 4317 -d dist
 ```
 
 Then open `http://localhost:4317/`.
@@ -58,18 +64,20 @@ Then open `http://localhost:4317/`.
 
 The prototype explicitly separates:
 
-- Source collection: `research/source-register.md` and the `sources` arrays in `data/investor-sight.js`.
+- Source collection: `research/source-register.md` and the `sources` arrays in `src/data.ts`.
 - Relevance filtering: event inclusion rules in `docs/spec.md` and `research/quick-notes.md`.
 - Event extraction: normalized `events` objects with `type`, `date`, `description`, `sourceId`, `importance`, and `confidence`.
-- Scoring / ranking: `src/scoring.mjs`, tested by `tests/scoring.test.mjs`.
-- Synthesis: `whyNow` sections in `data/investor-sight.js`.
-- Final output: `index.html`, `src/app.mjs`, and IC-style `memo` sections in the data.
+- Scoring / ranking: strict TypeScript in `src/scoring.ts`, tested by `tests/scoring.test.mjs`.
+- Synthesis: `whyNow` sections in `src/data.ts`.
+- Final output: `index.html`, `src/app.ts`, and IC-style `memo` sections in the data.
 
 ## How It Was Built
 
 - Spec-driven: the assignment PDF became `docs/spec.md` and `docs/implementation-plan.md`.
-- Test-driven: contract tests were written before the data/scoring modules and later extended for the explainer/system-design layer.
+- Test-driven: contract tests were written before the data/scoring modules and later extended for the TypeScript build and explainer/system-design layer.
+- Typed: the browser app, dataset contract, scoring model, and score components are all expressed in `src/*.ts` and checked by `tsc --noEmit`.
 - Research-driven: parallel research lanes collected SEC filings, IR releases, earnings materials, activist letters, proxy materials, transaction releases, and reputable public news.
+- Product-driven: ranking cards and deep dives expose the score waterfall instead of hiding factor judgment behind a single number.
 - Audit-driven: `docs/completion-audit.md` maps each assignment requirement to concrete evidence.
 
 ## Scoring Logic
@@ -115,11 +123,13 @@ The key system-design principle is evidence before synthesis. Every score change
 
 ## Files
 
-- `data/investor-sight.js`: source-backed company facts, events, synthesis, and memos.
-- `src/scoring.mjs`: ranking logic.
-- `src/app.mjs`: browser rendering and filters.
+- `src/data.ts`: typed source-backed company facts, events, synthesis, and memos.
+- `src/scoring.ts`: typed ranking logic and score components.
+- `src/app.ts`: browser rendering, filters, and score-waterfall UI.
+- `src/types.ts`: explicit project data contracts.
 - `tests/*.test.mjs`: schema, coverage, and scoring tests.
 - `scripts/verify-data.mjs`: data integrity verifier.
+- `scripts/build.mjs`: TypeScript build and static artifact verifier.
 - `docs/spec.md`: implementation spec.
 - `docs/completion-audit.md`: requirement-to-evidence audit.
 - `docs/system-design.md`: production architecture and roadmap.
@@ -129,4 +139,4 @@ The key system-design principle is evidence before synthesis. Every score change
 
 ## GitHub
 
-The code is ready to publish as a public standalone repo from this project directory. No license is selected yet; choose one deliberately before presenting this as reusable open-source software.
+This repo is structured as a standalone public project. It includes MIT licensing, GitHub Actions CI, a contributor guide, a lockfile, and publication notes that keep parent-repo/private artifacts out of the public export.

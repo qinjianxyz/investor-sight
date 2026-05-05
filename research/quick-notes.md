@@ -4,7 +4,7 @@
 
 I treated the assignment as a small research operating system:
 
-1. Define the required universe and output contract in `docs/spec.md`.
+1. Define the required universe and output contract in `../docs/spec.md`.
 2. Write tests for the data contract and ranking behavior before production code.
 3. Collect public sources across SEC filings, company IR, earnings releases, activist materials, transaction releases, and reputable news.
 4. Filter events to those that change current actionability: activist filings, proxy fights, board changes, management changes, guidance cuts, margin pressure, portfolio actions, capital allocation, strategic offers, and completed transactions.

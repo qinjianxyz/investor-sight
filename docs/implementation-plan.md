@@ -4,7 +4,7 @@
 
 **Goal:** Ship a source-backed browser prototype for the InvestorSight take-home assignment.
 
-**Architecture:** A static HTML/CSS/TypeScript app loads curated source-backed data, computes rankings in a typed scoring module, and renders a dense analyst dashboard. A Node test suite validates source coverage, event schema, scoring outputs, TypeScript build artifacts, and final memo coverage.
+**Architecture:** A static HTML/CSS/TypeScript app loads curated source-backed data, computes rankings in a typed scoring module, builds analyst workflow view models in `src/analysis.ts`, and renders a dense analyst cockpit. A Node test suite validates source coverage, event schema, scoring outputs, cockpit contracts, demo reliability, TypeScript build artifacts, and final memo coverage.
 
 **Tech Stack:** Strict TypeScript, Node built-in test runner, static HTML/CSS, no runtime dependencies.
 
@@ -67,3 +67,19 @@
 - [x] Add standalone OSS project surfaces.
 - [x] Add CI for install, typecheck, test, verify, and build.
 - [x] Add publication notes for keeping private parent-repo artifacts out of the public export.
+
+### Task 6: Analyst Cockpit and Demo Reliability
+
+**Files:**
+- Create: `src/analysis.ts`
+- Create: `tests/cockpit-contract.test.mjs`
+- Create: `scripts/demo-smoke.mjs`
+- Update: `src/app.ts`
+- Update: `index.html`
+- Update: `styles.css`
+
+- [x] Write failing cockpit contract tests for mission control, scenario lab, evidence ledger, change timeline, reliability console, and CI smoke wiring.
+- [x] Implement pure TypeScript analyst workflow builders.
+- [x] Render Mission Control, Scenario Lab, Evidence Ledger, Change Timeline, and Demo Reliability in the browser app.
+- [x] Add deterministic demo smoke checks for presenter-safe reliability.
+- [x] Wire demo smoke into GitHub Actions CI and evaluator documentation.

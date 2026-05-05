@@ -117,6 +117,69 @@ export interface RankedCompany extends Company {
   actionabilityTier: ActionabilityTier;
 }
 
+export type RecommendedAction = "Act now" | "Monitor this week" | "Needs diligence" | "Exclude";
+
+export interface AnalystQueueItem {
+  ticker: string;
+  name: string;
+  score: number;
+  tier: ActionabilityTier;
+  recommendedAction: RecommendedAction;
+  trigger: string;
+  objection: string;
+  nextStep: string;
+}
+
+export interface ScenarioView {
+  id: "activist-triage" | "ic-memo" | "risk-review";
+  title: string;
+  description: string;
+  topTickers: string[];
+  metric: string;
+  operatorQuestion: string;
+}
+
+export interface TimelineItem {
+  ticker: string;
+  name: string;
+  date: string;
+  type: string;
+  importance: Importance;
+  confidence: EventConfidence;
+  description: string;
+  sourceTitle: string;
+  sourceUrl: string;
+}
+
+export interface SourceTypeBreakdown {
+  label: string;
+  count: number;
+}
+
+export interface SourceTrustReport {
+  totalSources: number;
+  primarySourceCount: number;
+  primarySourceRatio: number;
+  eventsWithSources: number;
+  sourceTypeBreakdown: SourceTypeBreakdown[];
+}
+
+export interface ReliabilityCheck {
+  label: string;
+  status: "pass" | "warn";
+  detail: string;
+}
+
+export interface DemoReliabilityReport {
+  demoReadinessScore: number;
+  companies: number;
+  sources: number;
+  events: number;
+  missingEventSources: number;
+  requiredViews: string[];
+  checks: ReliabilityCheck[];
+}
+
 export interface InvestorSightData {
   asOf: string;
   generatedBy: string;

@@ -7,14 +7,16 @@ npm ci
 npm run typecheck
 npm test -- --test-reporter=dot
 npm run verify:data
+npm run demo:smoke
 npm run build
 ```
 
 Expected:
 
-- 12 tests pass.
+- 16 tests pass.
 - TypeScript compiles with `tsc --noEmit`.
-- Data verifier reports 10 companies, 54 sources, top `NCLH:92`.
+- Data verifier reports 10 companies, 54 sources, top `NCLH:92`, readiness `100`, and a stable ranking hash.
+- Demo smoke reports readiness `100`, top `NCLH:92`, and the catalyst timeline length.
 - Build emits `dist/index.html`, `dist/styles.css`, and compiled browser modules under `dist/src/`.
 
 ## 2. Open the Demo
@@ -27,7 +29,11 @@ Open `http://127.0.0.1:4317/`.
 
 ## 3. Review the Product Path
 
-- Start with the top decision panel: `Norwegian Cruise Line Holdings (NCLH)` is most actionable.
+- Start with Mission Control: the product answers what to act on, what to monitor, what needs diligence, and what to exclude.
+- Scan the Scenario Lab for activist triage, IC memo, and risk-review user modes.
+- Inspect the Evidence Ledger and Change Timeline before trusting the ranking.
+- Confirm Demo Reliability shows readiness `100` and all checks passing.
+- Use the top decision panel: `Norwegian Cruise Line Holdings (NCLH)` is most actionable.
 - Inspect the ranking cards, visible score waterfalls, and score drivers.
 - Open NCLH in the deep dive to inspect the highest-conviction case.
 - Open Kellanova to inspect the "Why Not Now" edge case after the Mars close.

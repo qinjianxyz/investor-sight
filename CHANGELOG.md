@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.0 - 2026-05-05
+
+- Added Analyst Mission Control for act-now, monitor, diligence, and exclude workflows.
+- Added Scenario Lab, Evidence Ledger, Change Timeline, and Demo Reliability console.
+- Added `src/analysis.ts` view-model/domain layer for analyst queue, scenario views, source trust, timeline, readiness, and ranking hash.
+- Added deterministic `npm run demo:smoke` and wired it into GitHub Actions CI.
+- Extended tests to cover cockpit product surfaces and demo reliability.
+
 ## 0.2.0 - 2026-05-05
 
 - Converted the prototype from plain ESM JavaScript to strict TypeScript.

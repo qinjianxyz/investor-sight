@@ -1,6 +1,22 @@
 import { investorSightData } from "./data.js";
 import { rankCompanies } from "./scoring.js";
-import type { RankedCompany, ScoreComponents } from "./types.js";
+import {
+  buildAnalystQueue,
+  buildDemoReliabilityReport,
+  buildEventTimeline,
+  buildScenarioViews,
+  buildSourceTrustReport,
+  stableRankingHash,
+} from "./analysis.js";
+import type {
+  AnalystQueueItem,
+  DemoReliabilityReport,
+  RankedCompany,
+  ScenarioView,
+  ScoreComponents,
+  SourceTrustReport,
+  TimelineItem,
+} from "./types.js";
 
 type FilterState = {
   company: string;
@@ -27,6 +43,11 @@ const els = {
   topCompany: queryElement<HTMLElement>("#top-company"),
   topRationale: queryElement<HTMLElement>("#top-rationale"),
   topScore: queryElement<HTMLElement>("#top-score"),
+  missionControl: queryElement<HTMLElement>("#mission-control"),
+  scenarioLab: queryElement<HTMLElement>("#scenario-lab"),
+  evidenceLedger: queryElement<HTMLElement>("#evidence-ledger"),
+  changeTimeline: queryElement<HTMLElement>("#change-timeline"),
+  demoReliability: queryElement<HTMLElement>("#demo-reliability"),
   productNarrative: queryElement<HTMLElement>("#product-narrative"),
   rankingGrid: queryElement<HTMLElement>("#ranking-grid"),
   workflow: queryElement<HTMLElement>("#workflow"),
@@ -53,6 +74,11 @@ function init(): void {
   els.topScore.textContent = String(top.score.total);
 
   populateFilters();
+  renderMissionControl(buildAnalystQueue(ranking));
+  renderScenarioLab(buildScenarioViews(ranking));
+  renderEvidenceLedger(buildSourceTrustReport(ranking));
+  renderChangeTimeline(buildEventTimeline(ranking));
+  renderDemoReliability(buildDemoReliabilityReport(investorSightData, ranking));
   renderProductNarrative();
   renderWorkflow();
   renderSystemDesign();
@@ -70,6 +96,138 @@ function init(): void {
     state.eventType = (event.currentTarget as HTMLSelectElement).value;
     render();
   });
+}
+
+function renderMissionControl(queue: AnalystQueueItem[]): void {
+  els.missionControl.replaceChildren(
+    ...queue.slice(0, 6).map((item) => {
+      const card = document.createElement("article");
+      card.className = `cockpit-card cockpit-card-${item.recommendedAction.toLowerCase().replaceAll(" ", "-")}`;
+      card.innerHTML = `
+        <div class="cockpit-card-topline">
+          <span class="ticker-pill">${escapeHtml(item.ticker)}</span>
+          <span class="action-pill">${escapeHtml(item.recommendedAction)}</span>
+        </div>
+        <h3>${escapeHtml(item.name)}</h3>
+        <div class="score-line">
+          <span>${escapeHtml(item.tier)}</span>
+          <strong>${item.score}/100</strong>
+        </div>
+        <p>${escapeHtml(item.trigger)}</p>
+        <dl class="cockpit-facts">
+          <div><dt>Next move</dt><dd>${escapeHtml(item.nextStep)}</dd></div>
+          <div><dt>Objection</dt><dd>${escapeHtml(item.objection)}</dd></div>
+        </dl>
+      `;
+      return card;
+    }),
+  );
+}
+
+function renderScenarioLab(scenarios: ScenarioView[]): void {
+  els.scenarioLab.innerHTML = `
+    <div class="section-mini-heading">
+      <p class="eyebrow">Scenario lab</p>
+      <h3>Three real user modes</h3>
+    </div>
+    <div class="scenario-grid">
+      ${scenarios
+        .map(
+          (scenario) => `
+            <article class="scenario-card">
+              <span class="type-pill">${escapeHtml(scenario.metric)}</span>
+              <h4>${escapeHtml(scenario.title)}</h4>
+              <p>${escapeHtml(scenario.description)}</p>
+              <div class="ticker-strip">${scenario.topTickers.map((ticker) => `<span>${escapeHtml(ticker)}</span>`).join("")}</div>
+              <strong>${escapeHtml(scenario.operatorQuestion)}</strong>
+            </article>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderEvidenceLedger(report: SourceTrustReport): void {
+  els.evidenceLedger.innerHTML = `
+    <div class="section-mini-heading">
+      <p class="eyebrow">Evidence ledger</p>
+      <h3>Source trust mix</h3>
+    </div>
+    <div class="ledger-grid">
+      <div class="ledger-stat">
+        <span>${report.totalSources}</span>
+        <label>sources</label>
+      </div>
+      <div class="ledger-stat">
+        <span>${Math.round(report.primarySourceRatio * 100)}%</span>
+        <label>primary-source coverage</label>
+      </div>
+      <div class="ledger-stat">
+        <span>${report.eventsWithSources}</span>
+        <label>events source-backed</label>
+      </div>
+    </div>
+    <ul class="source-type-list">
+      ${report.sourceTypeBreakdown
+        .slice(0, 8)
+        .map((item) => `<li><span>${escapeHtml(item.label)}</span><strong>${item.count}</strong></li>`)
+        .join("")}
+    </ul>
+  `;
+}
+
+function renderChangeTimeline(timeline: TimelineItem[]): void {
+  els.changeTimeline.innerHTML = `
+    <div class="section-mini-heading">
+      <p class="eyebrow">Change timeline</p>
+      <h3>Fresh catalysts</h3>
+    </div>
+    <ol class="timeline-list">
+      ${timeline
+        .slice(0, 8)
+        .map(
+          (item) => `
+            <li>
+              <div class="event-meta">
+                <span>${item.date}</span>
+                <span class="ticker-pill">${escapeHtml(item.ticker)}</span>
+                <span class="type-pill">${escapeHtml(item.type)}</span>
+              </div>
+              <strong>${escapeHtml(item.description)}</strong>
+              <a href="${item.sourceUrl}" target="_blank" rel="noreferrer">${escapeHtml(item.sourceTitle)}</a>
+            </li>
+          `,
+        )
+        .join("")}
+    </ol>
+  `;
+}
+
+function renderDemoReliability(report: DemoReliabilityReport): void {
+  els.demoReliability.innerHTML = `
+    <div class="section-mini-heading">
+      <p class="eyebrow">Demo reliability</p>
+      <h3>Presenter-safe proof</h3>
+    </div>
+    <div class="readiness-score">
+      <span>${report.demoReadinessScore}</span>
+      <label>readiness score</label>
+    </div>
+    <p class="hash-line">Ranking hash: <strong>${stableRankingHash(ranking)}</strong></p>
+    <ul class="reliability-list">
+      ${report.checks
+        .map(
+          (check) => `
+            <li class="check-${check.status}">
+              <span>${check.status === "pass" ? "PASS" : "WARN"}</span>
+              <div><strong>${escapeHtml(check.label)}</strong><p>${escapeHtml(check.detail)}</p></div>
+            </li>
+          `,
+        )
+        .join("")}
+    </ul>
+  `;
 }
 
 function populateFilters(): void {

@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 
+import { buildDemoReliabilityReport, stableRankingHash } from "../dist/src/analysis.js";
 import { investorSightData } from "../dist/src/data.js";
 import { rankCompanies } from "../dist/src/scoring.js";
 
 const requiredTickers = ["HON", "NCLH", "K", "LOW", "ALGM", "ZIP", "GIS", "ASH", "PSX", "LW"];
 const ranked = rankCompanies(investorSightData.companies);
+const reliability = buildDemoReliabilityReport(investorSightData, ranked);
 const sourceIds = new Set(investorSightData.companies.flatMap((company) => company.sources.map((source) => source.id)));
 
 assert.equal(investorSightData.asOf, "2026-05-05", "as-of date must match assignment run date");
@@ -32,4 +34,9 @@ for (const company of ranked) {
   assert.ok(company.score.penalties.length >= 1, `${company.ticker} score penalties visible`);
 }
 
-console.log(`PASS investor-sight data: ${ranked.length} companies, ${sourceIds.size} sources, top=${ranked[0].ticker}:${ranked[0].score.total}`);
+assert.equal(reliability.demoReadinessScore, 100, "demo readiness should be presenter-safe");
+assert.equal(reliability.missingEventSources, 0, "all events should resolve to company-local sources");
+
+console.log(
+  `PASS investor-sight data: ${ranked.length} companies, ${sourceIds.size} sources, top=${ranked[0].ticker}:${ranked[0].score.total}, readiness=${reliability.demoReadinessScore}, hash=${stableRankingHash(ranked)}`,
+);

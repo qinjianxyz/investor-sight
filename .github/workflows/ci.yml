@@ -31,5 +31,8 @@ jobs:
       - name: Verify data
         run: npm run verify:data
 
+      - name: Demo smoke
+        run: npm run demo:smoke
+
       - name: Build
         run: npm run build

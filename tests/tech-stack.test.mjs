@@ -15,6 +15,7 @@ test("project uses TypeScript source and exposes typecheck/build scripts", async
 test("build produces compiled browser modules", async () => {
   await access(new URL("../dist/index.html", import.meta.url));
   await access(new URL("../dist/src/app.js", import.meta.url));
+  await access(new URL("../dist/src/analysis.js", import.meta.url));
   await access(new URL("../dist/src/scoring.js", import.meta.url));
   await access(new URL("../dist/src/data.js", import.meta.url));
 

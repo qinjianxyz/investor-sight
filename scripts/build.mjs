@@ -18,7 +18,14 @@ for (const file of staticFiles) {
   await cp(join(process.cwd(), file), join(process.cwd(), "dist", file));
 }
 
-const requiredFiles = ["dist/index.html", "dist/styles.css", "dist/src/app.js", "dist/src/scoring.js", "dist/src/data.js"];
+const requiredFiles = [
+  "dist/index.html",
+  "dist/styles.css",
+  "dist/src/app.js",
+  "dist/src/analysis.js",
+  "dist/src/scoring.js",
+  "dist/src/data.js",
+];
 for (const file of requiredFiles) {
   await access(join(process.cwd(), file));
 }

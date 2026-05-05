@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>InvestorSight Why Now</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div>
+        <p class="eyebrow">InvestorSight prototype</p>
+        <h1>Why Now Activism Monitor</h1>
+        <p class="subtitle">
+          Source-backed actionability ranking for 10 public-company names as of
+          <span id="as-of">2026-05-05</span>.
+        </p>
+      </div>
+      <div class="header-metrics" aria-label="Summary metrics">
+        <div>
+          <span id="company-count">10</span>
+          <label>companies</label>
+        </div>
+        <div>
+          <span id="source-count">0</span>
+          <label>sources</label>
+        </div>
+        <div>
+          <span id="event-count">0</span>
+          <label>events</label>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="toolbar" aria-label="Controls">
+        <label>
+          Company
+          <select id="company-filter">
+            <option value="all">All companies</option>
+          </select>
+        </label>
+        <label>
+          Tier
+          <select id="tier-filter">
+            <option value="all">All tiers</option>
+          </select>
+        </label>
+        <label>
+          Event type
+          <select id="event-filter">
+            <option value="all">All events</option>
+          </select>
+        </label>
+      </section>
+
+      <section class="decision-panel" aria-labelledby="decision-heading">
+        <div>
+          <p class="eyebrow">Decision answer</p>
+          <h2 id="decision-heading">Most actionable now: <span id="top-company">NCLH</span></h2>
+          <p id="top-rationale"></p>
+        </div>
+        <div class="score-card">
+          <span id="top-score">92</span>
+          <label>actionability score</label>
+        </div>
+      </section>
+
+      <section aria-labelledby="narrative-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Brief</p>
+            <h2 id="narrative-heading">What we built and why it matters</h2>
+          </div>
+          <p>A concise evaluator-facing explanation of product value, build method, and the extra work that makes the prototype auditable.</p>
+        </div>
+        <div id="product-narrative" class="narrative-grid"></div>
+      </section>
+
+      <section aria-labelledby="ranking-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Ranking</p>
+            <h2 id="ranking-heading">Actionability from most to least urgent</h2>
+          </div>
+          <p>Scores combine activist pressure, recency, severity, thesis clarity, evidence quality, and uncertainty penalties.</p>
+        </div>
+        <div id="ranking-grid" class="ranking-grid"></div>
+      </section>
+
+      <section aria-labelledby="workflow-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Workflow</p>
+            <h2 id="workflow-heading">Required separation of work</h2>
+          </div>
+        </div>
+        <div id="workflow" class="workflow-grid"></div>
+      </section>
+
+      <section aria-labelledby="system-design-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">System design</p>
+            <h2 id="system-design-heading">How this becomes a production workflow</h2>
+          </div>
+          <p>Prototype choices are intentionally simple; the roadmap shows how to deepen ingestion, trust, extraction, review, delivery, and evaluation.</p>
+        </div>
+        <div id="system-design" class="system-grid"></div>
+      </section>
+
+      <section aria-labelledby="deep-dive-heading">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">Deep dives</p>
+            <h2 id="deep-dive-heading">Why now and decision memos</h2>
+          </div>
+        </div>
+        <div id="company-details" class="company-details"></div>
+      </section>
+    </main>
+
+    <script type="module" src="./src/app.mjs"></script>
+  </body>
+</html>
